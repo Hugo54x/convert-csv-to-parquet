@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  python:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/convert_csv_to_parquet.Dockerfile
+    restart: on-failure
+    environment: 
+      FILE_NAME_PATTERN: trip_2009-1*.csv
+      COMPRESSION_ALGORITHM: none # none, snappy, gzip, (lz4), (brotli), (zstd)
+      # data: raw: 7.6G; none: 2.6G;  snappy: 2.1G;  gzip: 1.5G;   lz4: 2.1G;  brotli: 1.1G;   zstd: 1.6G
+      # time:            none: 60.3s; snappy: 61.5s; gzip: 369.6s; lz4: 74.4s; brotli: 427.0s; zstd: 81.0s
+      # test-pc          none: 25.4s; snappy: 36.8s; gzip: ;       lz4: ;      brotli: 335.2;  zstd: 42.3s
+      FLAVOR: spark # None or spark
+    volumes:
+        - /tmp/trip/:/src/input/
+        - /tmp/trip-parquet/:/src/output/
